@@ -1,6 +1,5 @@
 module.exports = {
     name: 'interactionCreate',
-    once: true,
     async execute (interaction) {
         // Check if interaction is a command
         if (!interaction.isChatInputCommand()) return;
