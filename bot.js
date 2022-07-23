@@ -1,6 +1,12 @@
 require('dotenv').config()                              // used to load in env process variables
 const fs = require('fs')
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const Database = require('./config/Database')
+
+// Connect to Database
+const db = new Database()
+db.connect()
+
 
 // Creating client
 const client = new Client({

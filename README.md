@@ -7,12 +7,13 @@ Following this series, pick back up on start of part 4
 https://app.quickdatabasediagrams.com/#/
 
 
-``` Python
+```
 Members
 -
 ds_id varchar pk FK >- Shifts.ds_id
 ds_name varchar
 ds_nick varchar
+current_shift FK >- Shifts.shift_id
 
 Shifts
 -
@@ -27,4 +28,4 @@ Specialties
 -
 spec_id serial pk FK >- Shifts.spec_id
 speciality varchar
-```# Time
+```
