@@ -1,7 +1,9 @@
-https://www.youtube.com/watch?v=RbVXxVReCNc
 
-Following this series, pick back up on start of part 4
-
+## To-do
+- Categories/Specialties
+- Force swipe commpand
+- Way for user to see time in current time period
+- Update hard-coded values to be stored in guildsettings model
 
 ## DBD
 https://app.quickdatabasediagrams.com/#/
