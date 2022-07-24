@@ -2,6 +2,8 @@
 
 const { EmbedBuilder } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { AttachmentBuilder } = require('discord.js')
+const createCsvWriter = require('csv-writer').createObjectCsvWriter
 const Shift = require('../models/Shift')
 
 module.exports = {
@@ -29,7 +31,6 @@ module.exports = {
             return new Promise((resolve) => {
                 setTimeout(() => resolve(date), 300)
             })
-
         }
 
         // Convert inputted dates to Unix Date objects
@@ -54,10 +55,32 @@ module.exports = {
             }}
         ]);
 
-        // iterate through grouped object and print records
+        // Prepare list of objects to write to csv
+        csvRecords = []
         for await (const doc of s) {
-            console.log(doc)
+            csvRecords.push({
+                name: doc.member_info[0].name,
+                raw_time: doc.total_time
+            })
         }
+
+        // Clear and write header of csv file
+        const csvWriter = createCsvWriter({
+            path: './cache/time_period.csv',
+            header: [
+                {id: 'name', title: 'NAME'},
+                {id: 'raw_time', title: 'RAW_TIME'}
+            ]
+        })
+
+        // Write time data to csv
+        csvWriter.writeRecords(csvRecords)
+
+        // Read and prepare to send the CSV file
+        file = new AttachmentBuilder()
+            .setFile('./cache/time_period.csv')
+
+        interaction.reply({files: [file]})
         
     },
 }
