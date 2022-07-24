@@ -3,19 +3,35 @@
 const { EmbedBuilder } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const Member = require('../models/Member')
-
-
-
+const GuildSettings = require('../models/GuildSettings')
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('clocked-in')
 		.setDescription('See everyone currently clocked in.'),
 	async execute(interaction) {
-		
+
+        // get clocked-in role from guild settings
+        async function getClockRole(guild_id) {
+            let role_id = 0
+            GuildSettings.findOne({ guild_id: guild_id }, (err, settings) => {
+                if (err) {
+                    console.log(err)
+                    interaction.reply('An error occured while trying to check clocked in members.')
+                    return;
+                }
+                role_id = settings.clocked_in_role_id                
+            })
+
+            return new Promise((resolve) => {
+                setTimeout(() => resolve(role_id), 300)
+            })
+        }
+
         // get member ids
+        role_id = await getClockRole(interaction.guild.id)
         async function getIDs() {
-            const m = await interaction.guild.roles.fetch('886855569930072084')
+            const m = await interaction.guild.roles.fetch(role_id)
                 .then(role => role.members.map(member => member.id))
             return(m)
         }

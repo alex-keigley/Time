@@ -3,6 +3,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const Member = require('../models/Member')
 const Shift = require('../models/Shift')
+const GuildSettings = require('../models/GuildSettings')
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -10,14 +11,33 @@ module.exports = {
 		.setDescription('Toggle clocked-in status.'),
 	async execute(interaction) {
 
-        const member = interaction.member;                                                  // Stores info of person who ran command
-        const clockedIn = interaction.member.roles.cache.has('886855569930072084');         // Checks if member has the On Duty role
+        // get clocked-in role from guild settings
+        async function getClockRole(guild_id) {
+            let role_id = 0
+            GuildSettings.findOne({ guild_id: guild_id }, (err, settings) => {
+                if (err) {
+                    console.log(err)
+                    interaction.reply('An error occured while trying to check clocked in members.')
+                    return;
+                }
+                role_id = settings.clocked_in_role_id                
+            })
+
+            return new Promise((resolve) => {
+                setTimeout(() => resolve(role_id), 300)
+            })
+        }
+
+        role_id = await getClockRole(interaction.guild.id)
+
+        const member = interaction.member;                                     // Stores info of person who ran command
+        const clockedIn = interaction.member.roles.cache.has(role_id);         // Checks if member has the On Duty role
 
         // CLOCK-IN LOGIC
         if (!clockedIn) {
 
             // Add On-Duty Role
-            member.roles.add('886855569930072084')
+            member.roles.add(role_id)
 
             // Update member in DB to begin current shift
             Member.findOne( {ds_id: member.id}, (err, db_member) => {
@@ -73,7 +93,7 @@ module.exports = {
         else {
 
             // Remove On-Duty Role
-            member.roles.remove('886855569930072084')
+            member.roles.remove(role_id)
 
             // Temporary closing current shift
             // Update member in DB to begin current shift

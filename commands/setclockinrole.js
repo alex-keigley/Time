@@ -39,8 +39,6 @@ module.exports = {
                 settings.clocked_in_role_id = interaction.options.getRole('role').id
             }
 
-            console.log(settings)
-
             // Save and confirm new clock channel has been set
             settings.save(err => {
                 if (err) {
