@@ -5,6 +5,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { AttachmentBuilder } = require('discord.js')
 const createCsvWriter = require('csv-writer').createObjectCsvWriter
 const Shift = require('../models/Shift')
+const checkTimeAdmin = require('../scripts/checkTimeAdmin')
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -23,6 +24,13 @@ module.exports = {
                 .setRequired(true)
         ),
 	async execute(interaction) {
+
+        // Make sure user is a Time or Discord admin before running command
+        adminStatus = await checkTimeAdmin.checkTimeAdmin(interaction)
+        if (adminStatus) {
+            interaction.reply('You do not have permission to use this command') 
+            return
+        };
 
         // Convert date string to Date object
         async function getDate(dateString) {

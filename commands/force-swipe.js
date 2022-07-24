@@ -7,6 +7,7 @@ const { PermissionsBitField } = require('discord.js')
 const Member = require('../models/Member')
 const Shift = require('../models/Shift')
 const GuildSettings = require('../models/GuildSettings')
+const checkTimeAdmin = require('../scripts/checkTimeAdmin')
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -19,6 +20,13 @@ module.exports = {
                 .setRequired(true)
             ),
 	async execute(interaction) {
+
+        // Make sure user is a Time or Discord admin before running command
+        adminStatus = await checkTimeAdmin.checkTimeAdmin(interaction)
+        if (adminStatus) {
+            interaction.reply('You do not have permission to use this command') 
+            return
+        };
 
         // get clocked-in role from guild settings
         async function getClockRole(guild_id) {
@@ -38,12 +46,6 @@ module.exports = {
         }
 
         role_id = await getClockRole(interaction.guild.id)
-
-        // Check for admin or time perms
-        if (!interaction.member.permissions.has([PermissionsBitField.Flags.Administrator])) {
-            interaction.reply('You do not have permission to use this command.');
-            return;
-        }
 
         const member = interaction.options.getMember('member');                 // Stores info of person who is mentioned
         const clockedIn = member.roles.cache.has(role_id);         // Checks if member has the On Duty role

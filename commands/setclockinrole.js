@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { PermissionsBitField } = require('discord.js')
 const GuildSettings = require('../models/GuildSettings')
+const checkTimeAdmin = require('../scripts/checkTimeAdmin')
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -13,11 +14,12 @@ module.exports = {
         ),
     async execute(interaction) {
         
-        // Check for admin perms
-        if (!interaction.member.permissions.has([PermissionsBitField.Flags.Administrator])) {
-            interaction.reply('You do not have permission to use this command.');
-            return;
-        }
+        // Make sure user is a Time or Discord admin before running command
+        adminStatus = await checkTimeAdmin.checkTimeAdmin(interaction)
+        if (adminStatus) {
+            interaction.reply('You do not have permission to use this command') 
+            return
+        };
 
         // Adds or modified guild settings - done with setttings variable
         GuildSettings.findOne({ guild_id: interaction.guild.id }, (err, settings) => {

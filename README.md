@@ -2,7 +2,23 @@
 ## To-do
 - Categories/Specialties
 - Way for user to see time in current time period
-- guildsettings - manage clock roll for admin perms
+
+## Current Commands
+#### Open Access
+- /clocked-in - Returns list with times of everyone clocked in
+- /lifetime - Returns all hours ever tracked for user
+- /swipe - Used to clock in and out
+
+#### Administrator
+- /force-swipe - Force clock a user in or out
+- /setclockchannel - Set which channel to use for clocking in/out
+- /setclockinrole - Set which role to add while clocked in
+- /setmanageclockrole - Set role which will have admin level access to bot - Only usable by discord admin
+- /time-period - Totals time for each member with data between two given dates and generates CSV
+
+#### Developer
+- /echo
+- /ping
 
 ## DBD
 https://app.quickdatabasediagrams.com/#/

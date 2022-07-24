@@ -19,16 +19,9 @@ async function getClockManagerRole(guild_id) {
     })
 }
 
-async function checkTimeAdmin(interaction) {
-    // return 'File reached'    
-    
+async function checkTimeAdmin(interaction) {     
     clockManagerRole = await getClockManagerRole(interaction.guild.id)
 
-    // Check for Time management or admin perms
-    // if ( !(interaction.member.roles.cache.has(clockManagerRole) || interaction.member.permissions.has([PermissionsBitField.Flags.Administrator]))) {
-    //     interaction.reply('You do not have permission to use this command.');
-    //     return;
-    // }
     adminStatus = !(interaction.member.roles.cache.has(clockManagerRole) || interaction.member.permissions.has([PermissionsBitField.Flags.Administrator]))
     return adminStatus
 }
