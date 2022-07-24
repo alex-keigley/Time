@@ -1,7 +1,6 @@
 
 ## To-do
 - Categories/Specialties
-- Force swipe commpand
 - Way for user to see time in current time period
 - Update hard-coded values to be stored in guildsettings model
 - guildsettings - manage clock roll for admin perms

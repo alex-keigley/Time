@@ -4,11 +4,11 @@ const GuildSettings = require('../models/GuildSettings')
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('setclockchannel')
-        .setDescription('Set primary channel to clock in and out.')
-        .addChannelOption(option => option
-            .setName('clock')
-            .setDescription('The channel to set as the clock channel.')
+        .setName('setclockinrole')
+        .setDescription('Set role to add when members clock in')
+        .addRoleOption(option => option
+            .setName('role')
+            .setDescription('The role to set.')
             .setRequired(true)
         ),
     async execute(interaction) {
@@ -23,7 +23,7 @@ module.exports = {
         GuildSettings.findOne({ guild_id: interaction.guild.id }, (err, settings) => {
             if (err) {
                 console.log(err)
-                interaction.reply('An error occured while trying to set the clock channel.')
+                interaction.reply('An error occured while trying to set the clocked-in role.')
                 return;
             }
 
@@ -31,23 +31,25 @@ module.exports = {
             if (!settings) {
                 settings = new GuildSettings({
                     guild_id: interaction.guild.id,
-                    clock_channel_id: interaction.options.getChannel('clock').id
+                    clocked_in_role_id: interaction.options.getRole('role').id
                 })
             } 
             // Updates found record
             else {
-                settings.clock_channel_id = interaction.options.getChannel('clock').id
+                settings.clocked_in_role_id = interaction.options.getRole('role').id
             }
+
+            console.log(settings)
 
             // Save and confirm new clock channel has been set
             settings.save(err => {
                 if (err) {
                     console.log(err)
-                    interaction.reply('An error occured while trying to set the clock channel.')
+                    interaction.reply('An error occured while trying to set the clocked-in role.')
                     return;
                 }
 
-                interaction.reply(`Clock channel has been set to ${interaction.options.getChannel('clock')}`)
+                interaction.reply(`Clocked-in role has been set to ${interaction.options.getRole('role')}`)
             })
         })
 
