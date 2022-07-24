@@ -4,11 +4,11 @@ const GuildSettings = require('../models/GuildSettings')
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('setwelcomechannel')
-        .setDescription('Set the welcome message channel.')
+        .setName('setclockchannel')
+        .setDescription('Set primary channel to clock in and out.')
         .addChannelOption(option => option
-            .setName('welcome')
-            .setDescription('The channel to set as the welcome channel.')
+            .setName('clock')
+            .setDescription('The channel to set as the clock channel.')
             .setRequired(true)
         ),
     async execute(interaction) {
@@ -23,7 +23,7 @@ module.exports = {
         GuildSettings.findOne({ guild_id: interaction.guild.id }, (err, settings) => {
             if (err) {
                 console.log(err)
-                interaction.reply('An error occured while trying to set the welcome channel.')
+                interaction.reply('An error occured while trying to set the clock channel.')
                 return;
             }
 
@@ -31,21 +31,23 @@ module.exports = {
             if (!settings) {
                 settings = new GuildSettings({
                     guild_id: interaction.guild.id,
-                    welcome_channel_id: interaction.options.getChannel('welcome').id
+                    clock_channel_id: interaction.options.getChannel('clock').id
                 })
-            } else {
-                settings.welcome_channel_id = interaction.options.getChannel('welcome').id
+            } 
+            // Updates found record
+            else {
+                settings.clock_channel_id = interaction.options.getChannel('clock').id
             }
 
-            // Save and confirm new welcome channel has been set
+            // Save and confirm new clock channel has been set
             settings.save(err => {
                 if (err) {
                     console.log(err)
-                    interaction.reply('An error occured while trying to set the welcome channel.')
+                    interaction.reply('An error occured while trying to set the clock channel.')
                     return;
                 }
 
-                interaction.reply(`Welcome channel has been set to ${interaction.options.getChannel('welcome')}`)
+                interaction.reply(`Clock channel has been set to ${interaction.options.getChannel('clock')}`)
             })
         })
 
