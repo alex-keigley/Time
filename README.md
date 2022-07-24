@@ -11,9 +11,11 @@ https://app.quickdatabasediagrams.com/#/
 Members
 -
 ds_id varchar pk FK >- Shifts.ds_id
+guild_id varchar FK >- Guild_Settings.guild_id
 ds_name varchar
+ds_discriminator int
 ds_nick varchar
-current_shift FK >- Shifts.shift_id
+current_shift varchar FK >- Shifts.shift_id
 
 Shifts
 -
@@ -28,4 +30,9 @@ Specialties
 -
 spec_id serial pk FK >- Shifts.spec_id
 speciality varchar
+
+Guild_Settings
+-
+guild_id varchar pk
+clock_channel_id varchar
 ```
