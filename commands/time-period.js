@@ -80,7 +80,9 @@ module.exports = {
         file = new AttachmentBuilder()
             .setFile('./cache/time_period.csv')
 
-        interaction.reply({files: [file]})
-        
+        interaction.reply({
+            content: `**Time Period of:** \n *Start:* \`${startDate}\` \n *End:*\`${endDate}\``,
+            files: [file]
+        })        
     },
 }
