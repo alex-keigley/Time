@@ -24,7 +24,7 @@ module.exports = {
                     interaction.reply('There was an error removing the specialty.')
                     return;
                 }
-                interaction.reply(`${specialty} has been removed from settings.`)
+                interaction.reply(`${specialty} has been removed from available specialities.`)
             }
         )
 

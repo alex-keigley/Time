@@ -24,7 +24,7 @@ module.exports = {
                     interaction.reply('There was an error adding the new specialty.')
                     return;
                 }
-                interaction.reply(`${newSpecialty} has been successfully added to settings.`)
+                interaction.reply(`${newSpecialty} has been successfully added to available specialities.`)
             }
         )
 
