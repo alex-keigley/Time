@@ -15,6 +15,8 @@
 - /setclockinrole - Set which role to add while clocked in
 - /setmanageclockrole - Set role which will have admin level access to bot - Only usable by discord admin
 - /time-period - Totals time for each member with data between two given dates and generates CSV
+- /add-specialty - Add specialty to guild settings list
+- /remove-specialty - Remove specialty from guild settingsl list
 
 #### Developer
 - /echo

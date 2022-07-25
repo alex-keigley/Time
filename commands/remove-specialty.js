@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const GuildSettings = require('../models/GuildSettings')
+const checkTimeAdmin = require('../scripts/checkTimeAdmin')
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,6 +13,14 @@ module.exports = {
                 .setRequired(true)
     ),
     async execute(interaction) {
+
+        // Make sure user is a Time or Discord admin before running command
+        adminStatus = await checkTimeAdmin.checkTimeAdmin(interaction)
+        if (adminStatus) {
+            interaction.reply('You do not have permission to use this command') 
+            return
+        };
+
         specialty = interaction.options.getString('specialty')
         
         // Add new specialty to list
