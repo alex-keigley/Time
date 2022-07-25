@@ -8,30 +8,41 @@ const GuildSettings = require('../models/GuildSettings')
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('swipe')
-		.setDescription('Toggle clocked-in status.'),
+		.setDescription('Toggle clocked-in status.')
+        .addStringOption(option => 
+            option
+                .setName('specialty')
+                .setDescription('Choose what specialty to clock-in to.')
+            ),
 	async execute(interaction) {
 
-        // get clocked-in role from guild settings
-        async function getClockRole(guild_id) {
-            let role_id = 0
+        async function getSettings(guild_id) {
             GuildSettings.findOne({ guild_id: guild_id }, (err, settings) => {
                 if (err) {
                     console.log(err)
                     interaction.reply('An error occured while trying to check clocked in members.')
                     return;
                 }
-                role_id = settings.clocked_in_role_id                
+                guildSettings = settings            
             })
-
             return new Promise((resolve) => {
-                setTimeout(() => resolve(role_id), 300)
+                setTimeout(() => resolve(guildSettings), 300)
             })
         }
 
-        role_id = await getClockRole(interaction.guild.id)
-
+        // Preparing variables
+        settings = await getSettings(interaction.guild.id)
+        const role_id = settings.clocked_in_role_id
         const member = interaction.member;                                     // Stores info of person who ran command
         const clockedIn = interaction.member.roles.cache.has(role_id);         // Checks if member has the On Duty role
+        const allSpecialties = settings.specialities
+        const specialty = interaction.options.getString('specialty')
+
+        // Check if passed in specialty exists
+        // if null set to default value
+        // else if invalid prompt user to try again
+        validSpecialty = allSpecialties.includes(specialty)
+        console.log(validSpecialty)
 
         // CLOCK-IN LOGIC
         if (!clockedIn) {

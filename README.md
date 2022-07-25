@@ -2,6 +2,7 @@
 ## To-do
 - Categories/Specialties
 - Way for user to see time in current time period
+- Add default specialty in guildsettings
 
 ## Current Commands
 #### Open Access
