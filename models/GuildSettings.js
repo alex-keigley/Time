@@ -4,7 +4,8 @@ const GuildSettingsSchema = new mongoose.Schema({
     guild_id: String,
     clock_channel_id: String,
     clocked_in_role_id: String,
-    clock_manager_role: String
+    clock_manager_role: String,
+    specialities: Array
 })
 
 module.exports = mongoose.model('GuildSettings', GuildSettingsSchema)

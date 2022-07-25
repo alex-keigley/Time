@@ -11,7 +11,7 @@ async function getClockManagerRole(guild_id) {
             interaction.reply('An error occured while trying to check clocked in members.')
             return;
         }
-        role_id = settings.clock_manager_role            
+        role_id = settings.clock_manager_role              
     })
 
     return new Promise((resolve) => {
