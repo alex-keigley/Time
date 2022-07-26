@@ -5,6 +5,7 @@ const GuildSettingsSchema = new mongoose.Schema({
     clock_channel_id: String,
     clocked_in_role_id: String,
     clock_manager_role: String,
+    default_specialty: String,
     specialities: Array
 })
 

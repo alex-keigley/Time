@@ -21,7 +21,7 @@ module.exports = {
             return
         };
 
-        newSpecialty = interaction.options.getString('specialty')
+        newSpecialty = interaction.options.getString('specialty').toUpperCase()
         
         // Add new specialty to list
         GuildSettings.updateOne(
