@@ -3,6 +3,9 @@
 - Create better time-period command
 - Way for user to see time in current time period
 
+# Ideas
+- Could use event listeners and timestamps to enable automation of things like closing time period.
+
 ## Current Commands
 #### Open Access
 - /clocked-in - Returns list with times of everyone clocked in
