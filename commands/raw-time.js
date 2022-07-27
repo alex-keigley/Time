@@ -47,7 +47,7 @@ module.exports = {
 
         // Group all shifts in time period by discord ID
         const s = Shift.aggregate([
-            { $match: { start_time: { $gte: startDate }, end_time: { $lte: endDate } }},
+            { $match: { start_time: { $gte: startDate }, end_time: { $lte: endDate }, guild_id: interaction.guild.id }},
             { $group: {
                 _id: '$ds_id',
                 total_time: { $sum: '$total_length'}
