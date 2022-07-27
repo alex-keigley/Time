@@ -29,26 +29,43 @@ module.exports = {
         };
 
         // get clocked-in role from guild settings
-        async function getClockRole(guild_id) {
-            let role_id = 0
+        // async function getClockRole(guild_id) {
+        //     let role_id = 0
+        //     GuildSettings.findOne({ guild_id: guild_id }, (err, settings) => {
+        //         if (err) {
+        //             console.log(err)
+        //             interaction.reply('An error occured while trying to check clocked in members.')
+        //             return;
+        //         }
+        //         role_id = settings.clocked_in_role_id                
+        //     })
+
+        //     return new Promise((resolve) => {
+        //         setTimeout(() => resolve(role_id), 300)
+        //     })
+        // }
+        async function getSettings(guild_id) {
             GuildSettings.findOne({ guild_id: guild_id }, (err, settings) => {
                 if (err) {
                     console.log(err)
                     interaction.reply('An error occured while trying to check clocked in members.')
                     return;
                 }
-                role_id = settings.clocked_in_role_id                
+                guildSettings = settings            
             })
-
             return new Promise((resolve) => {
-                setTimeout(() => resolve(role_id), 300)
+                setTimeout(() => resolve(guildSettings), 300)
             })
         }
 
-        role_id = await getClockRole(interaction.guild.id)
+
+        // role_id = await getClockRole(interaction.guild.id)
+        settings = await getSettings(interaction.guild.id)
+        role_id = settings.clocked_in_role_id
+        specialty = settings.default_specialty
 
         const member = interaction.options.getMember('member');                 // Stores info of person who is mentioned
-        const clockedIn = member.roles.cache.has(role_id);         // Checks if member has the On Duty role
+        const clockedIn = member.roles.cache.has(role_id);                      // Checks if member has the On Duty role
 
         // CLOCK-IN LOGIC
         if (!clockedIn) {
@@ -69,6 +86,7 @@ module.exports = {
                 // Create new shift object
                 new_shift = {
                     ds_id: member.id,
+                    specialty: specialty,
                     guild_id: interaction.guild.id,
                     start_time: new Date().getTime()
                 }
@@ -101,7 +119,7 @@ module.exports = {
                     }
 
                     // Confirms to user they clocked in
-                    interaction.reply(`${member} has clocked in.`);
+                    interaction.reply(`${member} has clocked in to ${specialty}.`);
                 })
             })
         } 
@@ -131,6 +149,7 @@ module.exports = {
                 new_shift = {
                     ds_id: db_member.ds_id,
                     guild_id: db_member.guild_id,
+                    specialty: db_member.current_shift.specialty,
                     start_time: db_member.current_shift.start_time,
                     end_time: end_time,
                     total_length: total_length
