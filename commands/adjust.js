@@ -42,7 +42,7 @@ module.exports = {
         const minutes = interaction.options.getNumber('minutes')
         const allSpecialties = settings.specialities
         let specialty = settings.default_specialty
-        milliseconds = minutes * 60000
+        const milliseconds = minutes * 60000
 
         // Set specialty if one is passed through, otherwise use default
         if (interaction.options.getString('specialty')) {

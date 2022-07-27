@@ -9,8 +9,8 @@ const checkTimeAdmin = require('../scripts/checkTimeAdmin')
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('time-period')
-		.setDescription('By individual, return all hours clocked in a specific timeframe.')
+		.setName('raw-time')
+		.setDescription('Members milliseconds in time-frame. Adjustments/specialty not included.')
         .addStringOption( (option) => 
             option
                 .setName('start-date')
