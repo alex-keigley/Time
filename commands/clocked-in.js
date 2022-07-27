@@ -47,7 +47,8 @@ module.exports = {
 
                     membersClockedIn.push({
                         name: member.ds_nick,
-                        shift_length: shift_length
+                        shift_length: shift_length,
+                        specialty: member.current_shift.specialty
                     })
                 })
             }))
@@ -72,7 +73,7 @@ module.exports = {
             clockedInMembers.forEach((member => {
                 shift_length = new Date(member.shift_length)
                 shift_length = shift_length.toISOString().slice(11, 19); // 👉️ 15:00:00
-                message = message.concat(`**${member.name}** \n *${shift_length}* \n`)
+                message = message.concat(`**${member.name} - ${member.specialty}** \n *${shift_length}* \n`)
             }))
 
             // create and send embed
