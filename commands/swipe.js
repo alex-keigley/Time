@@ -36,13 +36,24 @@ module.exports = {
         const member = interaction.member;                                     // Stores info of person who ran command
         const clockedIn = interaction.member.roles.cache.has(role_id);         // Checks if member has the On Duty role
         const allSpecialties = settings.specialities
-        const specialty = interaction.options.getString('specialty')
+        const defaultSpecialty = settings.default_specialty
+        let specialty = interaction.options.getString('specialty')
 
-        // Check if passed in specialty exists
-        // if null set to default value
-        // else if invalid prompt user to try again
+        // Assign specialty to default if none is provided
+        if (specialty === null) {
+            specialty = defaultSpecialty
+        } else {
+            // Ensure input is all caps
+            specialty = specialty.toUpperCase()
+        }
+
+        // Check if passed in specialty exists, if not abort and notify user
         validSpecialty = allSpecialties.includes(specialty)
-        console.log(validSpecialty)
+
+        if (!validSpecialty) {
+            interaction.reply(`${specialty} does not exist. Try again and verify spelling.`)
+            return
+        }
 
         // CLOCK-IN LOGIC
         if (!clockedIn) {
@@ -63,6 +74,7 @@ module.exports = {
                 // Create new shift object
                 new_shift = {
                     ds_id: member.id,
+                    specialty: specialty,
                     guild_id: interaction.guild.id,
                     start_time: new Date().getTime()
                 }
@@ -95,7 +107,7 @@ module.exports = {
                     }
 
                     // Confirms to user they clocked in
-                    interaction.reply(`${member} has clocked in.`);
+                    interaction.reply(`${member} has clocked in to ${specialty}.`);
                 })
             })
         } 
@@ -125,6 +137,7 @@ module.exports = {
                 new_shift = {
                     ds_id: db_member.ds_id,
                     guild_id: db_member.guild_id,
+                    specialty: db_member.current_shift.specialty,
                     start_time: db_member.current_shift.start_time,
                     end_time: end_time,
                     total_length: total_length
