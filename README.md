@@ -1,8 +1,8 @@
 
 ## To-do
-- Categories/Specialties
+- Retrieve specialty time from DB
 - Way for user to see time in current time period
-- Add default specialty in guildsettings
+- Add adjustments - Maybe "adjust MEMBER +/-MINUTES SPECIALTY"
 
 ## Current Commands
 #### Open Access
@@ -18,6 +18,7 @@
 - /time-period - Totals time for each member with data between two given dates and generates CSV
 - /add-specialty - Add specialty to guild settings list
 - /remove-specialty - Remove specialty from guild settingsl list
+- /set-defaultspecialty - Sets specialtiy to clock-in to if there is no input
 
 #### Developer
 - /echo
