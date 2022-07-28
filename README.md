@@ -3,6 +3,8 @@
 - Create better time-period command
 - Formatting
 - Standardize command format
+- Refactor /close-timeperiod
+- Continue refactoring starting from lifetime.js
 
 # Ideas
 - Could use event listeners and timestamps to enable automation of things like closing time period.

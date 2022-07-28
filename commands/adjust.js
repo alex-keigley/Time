@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-
+const { SlashCommandBuilder } = require('@discordjs/builders')
 const Adjustment = require('../models/Adjustment')
 const checkTimeAdmin = require('../scripts/checkTimeAdmin')
 const getGuildSettings = require('../scripts/getGuildSettings')
@@ -24,6 +23,7 @@ module.exports = {
             option
                 .setName('specialty')
                 .setDescription('Specialty to add or deduct time from.')
+                .setRequired(true)
             ),
 	async execute(interaction) {
 
