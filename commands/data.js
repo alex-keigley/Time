@@ -47,6 +47,20 @@ module.exports = {
 
         currentTimes = await getIndividualTimes.getIndividualTimes(guild_id, ds_id, startDate, endDate)
 
+        // check if any times were returned
+        if (currentTimes.length === 0) {
+            // Create and send embed
+            embed = new EmbedBuilder()
+                .setColor('#1E90FF')
+                .setTitle(`${ds_nick} Time since ${startDate}`)
+                .setDescription('No time clocked this time period.')                
+            interaction.reply({
+                embeds: [embed],
+                ephemeral: true
+            })
+            return
+        }
+
         // Prepare message
         let message = ''
         currentTimes.forEach((time) => {
