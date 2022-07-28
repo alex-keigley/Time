@@ -5,9 +5,9 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder } = require('discord.js');
 const Member = require('../models/Member')
 const Shift = require('../models/Shift')
-const checkTimeAdmin = require('../scripts/checkTimeAdmin')
-const getGuildSettings = require('../scripts/getGuildSettings')
-const convertMsToTime = require('../scripts/convertMsToTime')
+const {checkTimeAdmin} = require('../scripts/checkTimeAdmin')
+const {getGuildSettings} = require('../scripts/getGuildSettings')
+const {convertMsToTime} = require('../scripts/convertMsToTime')
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -22,14 +22,14 @@ module.exports = {
 	async execute(interaction) {
 
         // Make sure user is a Time or Discord admin before running command
-        adminStatus = await checkTimeAdmin.checkTimeAdmin(interaction)
+        adminStatus = await checkTimeAdmin(interaction)
         if (adminStatus) {
             interaction.reply('You do not have permission to use this command') 
             return
         };
 
         // role_id = await getClockRole(interaction.guild.id)
-        settings = await getGuildSettings.getGuildSettings(interaction.guild.id)
+        settings = await getGuildSettings(interaction.guild.id)
         role_id = settings.clocked_in_role_id
         specialty = settings.default_specialty
         const member = interaction.options.getMember('member');                 // Stores info of person who is mentioned
@@ -143,7 +143,7 @@ module.exports = {
                     }
 
                     // Confirms to user they clocked in
-                    timeString = convertMsToTime.convertMsToTime(new_shift.total_length)
+                    timeString = convertMsToTime(new_shift.total_length)
                     embed = new EmbedBuilder()
                         .setColor('#1E90FF')
                         .setDescription(`${member} has clocked out of \`${specialty}\`\n\`${timeString}\` has been added to total time.`)

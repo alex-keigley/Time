@@ -2,7 +2,8 @@
 
 const { EmbedBuilder } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const Shift = require('../models/Shift')
+const {getIndividualTimes} = require('../scripts/getIndividualTimes')
+const {convertMsToTime} = require('../scripts/convertMsToTime');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -10,39 +11,45 @@ module.exports = {
 		.setDescription('Return all hours clocked since implementation'),
 	async execute(interaction) {
 
-        async function getTotalTime(id) {
+        // Setup variables
+        const guild_id = interaction.guild.id
+        const ds_id = interaction.member.id
+        const ds_nick = interaction.member.nickname
+        const startDate = new Date('2022-07-01')                // Start time is before bot existed, therefore before any data existed
+        const endDate = new Date()                              // Current time
+        lifetimeTotals = await getIndividualTimes(guild_id, ds_id, startDate, endDate)
 
-            // Total time in millliseconds
-            totalTime = 0
-
-            Shift.find({ ds_id: id }, (err, shifts)  => {
-                shifts.forEach((shift => {
-                    totalTime += shift.total_length
-                }))    
+        // check if any times were returned
+        if (currentTimes.length === 0) {
+            // Create and send embed
+            embed = new EmbedBuilder()
+                .setColor('#1E90FF')
+                .setTitle(`${ds_nick} Lifetime Totals`)
+                .setDescription('No time ever clocked.')                
+            interaction.reply({
+                embeds: [embed],
+                ephemeral: true
             })
-
-            return new Promise((resolve) => {
-                setTimeout(() => resolve(totalTime), 300)
-            })
+            return
         }
-        
-		totalTime = await getTotalTime(interaction.member.id)
-        
-        // Do caluclations to display fancy time string
-        var date = new Date(totalTime)
-        var hours = date.getHours()
-        var minutes = date.getMinutes()
-        var seconds = date.getSeconds()
 
-        const timeString = `${hours} hours ${minutes} minutes and ${seconds} seconds`
+        // Prepare message
+        let message = ''
+        currentTimes.forEach((time) => {
+            specialty = time.specialty
+            milliseconds = time.time
+            timeString = convertMsToTime(milliseconds)
+            message = message.concat(`${specialty} - *${timeString}*\n`)
+        })
 
-        // Create embed
+        // Create and send embed
         embed = new EmbedBuilder()
             .setColor('#1E90FF')
-            .setTitle(`${interaction.member.nickname} - Lifetime Hours`)
-            .setDescription(timeString)
-
-        interaction.reply({embeds: [embed]})
-        
+            .setTitle(`${ds_nick} - Lifetime Totals`)
+            .setDescription(message)                
+        interaction.reply({
+            embeds: [embed],
+            ephemeral: true
+        })        
     },
 }

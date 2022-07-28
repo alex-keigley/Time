@@ -3,8 +3,8 @@
 const { EmbedBuilder } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const Member = require('../models/Member')
-const getGuildSettings = require('../scripts/getGuildSettings')
-const convertMsToTime = require('../scripts/convertMsToTime')
+const {getGuildSettings} = require('../scripts/getGuildSettings')
+const {convertMsToTime} = require('../scripts/convertMsToTime')
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -13,7 +13,7 @@ module.exports = {
 	async execute(interaction) {
 
         // Get guild settings and variables
-        settings = await getGuildSettings.getGuildSettings(interaction.guild.id)
+        settings = await getGuildSettings(interaction.guild.id)
         role_id = settings.clocked_in_role_id
 
         // Get data of all clocked in members
@@ -31,7 +31,7 @@ module.exports = {
             // create description text for embed
             let message = ''
             clockedInMembers.forEach((member => {
-                shiftString = convertMsToTime.convertMsToTime(member.shift_length)
+                shiftString = convertMsToTime(member.shift_length)
                 message = message.concat(`**${member.name}** - ${member.specialty}\n*${shiftString}*\n`)
             }))
 

@@ -1,11 +1,10 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { PermissionsBitField } = require('discord.js')
 const GuildSettings = require('../models/GuildSettings')
-const checkTimeAdmin = require('../scripts/checkTimeAdmin')
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('setmanageclockrole')
+        .setName('set-manageclockrole')
         .setDescription('Set role to allow access to admin commands of Time bot')
         .addRoleOption(option => option
             .setName('role')
@@ -51,6 +50,5 @@ module.exports = {
                 interaction.reply(`Clock manager role has been set to ${interaction.options.getRole('role')}`)
             })
         })
-
     }
 }

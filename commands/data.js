@@ -1,9 +1,9 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { EmbedBuilder } = require('discord.js');
 
-const getGuildSettings = require('../scripts/getGuildSettings');
-const getIndividualTimes = require('../scripts/getIndividualTimes');
-const convertMsToTime = require('../scripts/convertMsToTime');
+const {getGuildSettings} = require('../scripts/getGuildSettings');
+const {getIndividualTimes} = require('../scripts/getIndividualTimes');
+const {convertMsToTime} = require('../scripts/convertMsToTime');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,7 +12,7 @@ module.exports = {
     async execute(interaction) {
 
         // Get/set variables
-        let settings = await getGuildSettings.getGuildSettings(interaction.guild.id)
+        let settings = await getGuildSettings(interaction.guild.id)
         startDate = settings.previous_time_close
         endDate = new Date()
         guild_id = interaction.guild.id
@@ -20,14 +20,14 @@ module.exports = {
         ds_nick = interaction.member.nickname
 
         // Get total of time clocked by specialty since last time-period close
-        currentTimes = await getIndividualTimes.getIndividualTimes(guild_id, ds_id, startDate, endDate)
+        currentTimes = await getIndividualTimes(guild_id, ds_id, startDate, endDate)
 
         // check if any times were returned
         if (currentTimes.length === 0) {
             // Create and send embed
             embed = new EmbedBuilder()
                 .setColor('#1E90FF')
-                .setTitle(`${ds_nick} Time since ${startDate}`)
+                .setTitle(`${ds_nick} - Current Totals`)
                 .setDescription('No time clocked this time period.')                
             interaction.reply({
                 embeds: [embed],
@@ -41,14 +41,14 @@ module.exports = {
         currentTimes.forEach((time) => {
             specialty = time.specialty
             milliseconds = time.time
-            timeString = convertMsToTime.convertMsToTime(milliseconds)
+            timeString = convertMsToTime(milliseconds)
             message = message.concat(`${specialty} - *${timeString}*\n`)
         })
 
         // Create and send embed
         embed = new EmbedBuilder()
             .setColor('#1E90FF')
-            .setTitle(`${ds_nick} Time since ${startDate}`)
+            .setTitle(`${ds_nick} - Current Totals`)
             .setDescription(message)                
         interaction.reply({
             embeds: [embed],

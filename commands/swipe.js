@@ -1,9 +1,11 @@
 // This command handles the logic of clocking in and out.
 
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { EmbedBuilder } = require('discord.js');
 const Member = require('../models/Member')
 const Shift = require('../models/Shift')
-const GuildSettings = require('../models/GuildSettings')
+const {getGuildSettings} = require('../scripts/getGuildSettings')
+const {convertMsToTime} = require('../scripts/convertMsToTime')
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -16,22 +18,8 @@ module.exports = {
             ),
 	async execute(interaction) {
 
-        async function getSettings(guild_id) {
-            GuildSettings.findOne({ guild_id: guild_id }, (err, settings) => {
-                if (err) {
-                    console.log(err)
-                    interaction.reply('An error occured while trying to check clocked in members.')
-                    return;
-                }
-                guildSettings = settings            
-            })
-            return new Promise((resolve) => {
-                setTimeout(() => resolve(guildSettings), 300)
-            })
-        }
-
         // Preparing variables
-        settings = await getSettings(interaction.guild.id)
+        settings = await getGuildSettings(interaction.guild.id)
         const role_id = settings.clocked_in_role_id
         const member = interaction.member;                                     // Stores info of person who ran command
         const clockedIn = interaction.member.roles.cache.has(role_id);         // Checks if member has the On Duty role
@@ -107,7 +95,10 @@ module.exports = {
                     }
 
                     // Confirms to user they clocked in
-                    interaction.reply(`${member} has clocked in to ${specialty}.`);
+                    embed = new EmbedBuilder()
+                        .setColor('#1E90FF')
+                        .setDescription(`${member} has clocked in to \`${specialty}\``)
+                    interaction.reply({ embeds: [embed] });
                 })
             })
         } 
@@ -160,7 +151,11 @@ module.exports = {
                     }
 
                     // Confirms to user they clocked in
-                    interaction.reply(`${member} has clocked out.`);
+                    timeString = convertMsToTime(new_shift.total_length)
+                    embed = new EmbedBuilder()
+                        .setColor('#1E90FF')
+                        .setDescription(`${member} has clocked out of \`${new_shift.specialty}\`\n\`${timeString}\` has been added to total time.`)
+                    interaction.reply({ embeds: [embed] });
                 })
             })
         }		

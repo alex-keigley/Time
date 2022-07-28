@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const Adjustment = require('../models/Adjustment')
-const checkTimeAdmin = require('../scripts/checkTimeAdmin')
-const getGuildSettings = require('../scripts/getGuildSettings')
+const {checkTimeAdmin} = require('../scripts/checkTimeAdmin')
+const {getGuildSettings} = require('../scripts/getGuildSettings')
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -28,14 +28,14 @@ module.exports = {
 	async execute(interaction) {
 
         // Make sure user is a Time or Discord admin before running command
-        adminStatus = await checkTimeAdmin.checkTimeAdmin(interaction)
+        adminStatus = await checkTimeAdmin(interaction)
         if (adminStatus) {
             interaction.reply('You do not have permission to use this command') 
             return
         };
 
         // Get guild settings
-        settings = await getGuildSettings.getGuildSettings(interaction.guild.id)
+        settings = await getGuildSettings(interaction.guild.id)
 
         // Variable creation
         const member = interaction.options.getMember('member')
@@ -46,7 +46,7 @@ module.exports = {
 
         // Set specialty if one is passed through, otherwise use default
         if (interaction.options.getString('specialty')) {
-            specialty = interaction.options.getString('specialty')
+            specialty = interaction.options.getString('specialty').toUpperCase()
             if (!allSpecialties.includes(specialty)) {
                 interaction.reply(`${specialty} does not exist. Try again and verify spelling.`)
                 return

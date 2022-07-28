@@ -1,21 +1,20 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { PermissionsBitField } = require('discord.js')
 const GuildSettings = require('../models/GuildSettings')
-const checkTimeAdmin = require('../scripts/checkTimeAdmin')
+const {checkTimeAdmin} = require('../scripts/checkTimeAdmin')
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('setclockinrole')
-        .setDescription('Set role to add when members clock in')
-        .addRoleOption(option => option
-            .setName('role')
-            .setDescription('The role to set.')
+        .setName('set-clockchannel')
+        .setDescription('Set primary channel to clock in and out.')
+        .addChannelOption(option => option
+            .setName('clock')
+            .setDescription('The channel to set as the clock channel.')
             .setRequired(true)
         ),
     async execute(interaction) {
         
         // Make sure user is a Time or Discord admin before running command
-        adminStatus = await checkTimeAdmin.checkTimeAdmin(interaction)
+        adminStatus = await checkTimeAdmin(interaction)
         if (adminStatus) {
             interaction.reply('You do not have permission to use this command') 
             return
@@ -25,7 +24,7 @@ module.exports = {
         GuildSettings.findOne({ guild_id: interaction.guild.id }, (err, settings) => {
             if (err) {
                 console.log(err)
-                interaction.reply('An error occured while trying to set the clocked-in role.')
+                interaction.reply('An error occured while trying to set the clock channel.')
                 return;
             }
 
@@ -33,25 +32,24 @@ module.exports = {
             if (!settings) {
                 settings = new GuildSettings({
                     guild_id: interaction.guild.id,
-                    clocked_in_role_id: interaction.options.getRole('role').id
+                    clock_channel_id: interaction.options.getChannel('clock').id
                 })
             } 
             // Updates found record
             else {
-                settings.clocked_in_role_id = interaction.options.getRole('role').id
+                settings.clock_channel_id = interaction.options.getChannel('clock').id
             }
 
             // Save and confirm new clock channel has been set
             settings.save(err => {
                 if (err) {
                     console.log(err)
-                    interaction.reply('An error occured while trying to set the clocked-in role.')
+                    interaction.reply('An error occured while trying to set the clock channel.')
                     return;
                 }
 
-                interaction.reply(`Clocked-in role has been set to ${interaction.options.getRole('role')}`)
+                interaction.reply(`Clock channel has been set to ${interaction.options.getChannel('clock')}`)
             })
         })
-
     }
 }

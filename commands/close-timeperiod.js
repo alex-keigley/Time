@@ -13,8 +13,8 @@ const GuildSettings = require('../models/GuildSettings')
 
 // Other imports
 const createCsvWriter = require('csv-writer').createObjectCsvWriter
-const checkTimeAdmin = require('../scripts/checkTimeAdmin')
-const getGuildSettings = require('../scripts/getGuildSettings');
+const {checkTimeAdmin} = require('../scripts/checkTimeAdmin')
+const {getGuildSettings} = require('../scripts/getGuildSettings');
 const { listIndexes } = require('../models/Shift');
 
 module.exports = {
@@ -24,14 +24,14 @@ module.exports = {
 	async execute(interaction) {
 
         // Make sure user is a Time or Discord admin before running command
-        adminStatus = await checkTimeAdmin.checkTimeAdmin(interaction)
+        adminStatus = await checkTimeAdmin(interaction)
         if (adminStatus) {
             interaction.reply('You do not have permission to use this command') 
             return
         };
 
         // Setting up variables
-        let settings = await getGuildSettings.getGuildSettings(interaction.guild.id)
+        let settings = await getGuildSettings(interaction.guild.id)
         guild_id = settings.guild_id
         lastClose = settings.previous_time_close
         newClose = new Date()
