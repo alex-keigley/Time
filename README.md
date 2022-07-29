@@ -1,7 +1,5 @@
 
 ## To-do
-- Create better time-period command
-- Refactor /close-timeperiod & /raw-time
 
 # Ideas
 - Could use event listeners and timestamps to enable automation of things like closing time period.
@@ -18,7 +16,7 @@
 - /setclockchannel - Set which channel to use for clocking in/out
 - /setclockinrole - Set which role to add while clocked in
 - /setmanageclockrole - Set role which will have admin level access to bot - Only usable by discord admin
-- /raw-time - Totals milliseconds for each member with data between two given dates and generates CSV. Does not account for specialties or adjustments.
+- /time-period - Totals milliseconds for each member with data between two given dates and generates CSV.
 - /add-specialty - Add specialty to guild settings list
 - /remove-specialty - Remove specialty from guild settingsl list
 - /set-defaultspecialty - Sets specialtiy to clock-in to if there is no input
