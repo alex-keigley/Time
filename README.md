@@ -16,6 +16,7 @@
 - /set-clockchannel - Set which channel to use for clocking in/out
 - /set-clockinrole - Set which role to add while clocked in
 - /set-manageclockrole - Set role which will have admin level access to bot - Only usable by discord admin
+- /set-expectedtime - Set time in minutes that members are supposed to clock in a time period.
 - /set-defaultspecialty - Sets specialtiy to clock-in to if there is no input
 - /add-specialty - Add specialty to guild settings list
 - /remove-specialty - Remove specialty from guild settingsl list
