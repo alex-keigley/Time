@@ -33,8 +33,8 @@ module.exports = {
         newClose = new Date()
 
         // Hard-coded dates for developing/troubleshooting
-        // lastClose = new Date('2022-05-01')
-        // newClose = new Date('2022-05-01')
+        lastClose = new Date('2022-05-01')
+        newClose = new Date('2022-09-01')
 
         // Handle if guild has never closed a time period
         if (!lastClose) {
@@ -52,7 +52,14 @@ module.exports = {
             return
         }
 
-        finalTimes = await getAllTimes(guild_id, lastClose, newClose)
+        // get sum of shifts - adjustments of all members
+        rawFinalTimes = await getAllTimes(guild_id, lastClose, newClose)
+
+        // convert milliseconds to minutes
+        finalTimes = rawFinalTimes.map(obj => {
+            minutes = Math.floor(obj.time / 60000)
+            return {...obj, time: minutes}
+        })
 
         // Create the new csv
         const csvWriter = createCsvWriter({
@@ -61,7 +68,7 @@ module.exports = {
                 {id: 'ds_id', title:'DISCORD_ID'},
                 {id: 'name', title:'NAME'},
                 {id: 'specialty', title:'SPECIALTY'},
-                {id: 'time', title:'TIME'}
+                {id: 'time', title:'MINUTES'}
             ]
         })
         csvWriter.writeRecords(finalTimes)

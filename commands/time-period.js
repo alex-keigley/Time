@@ -44,7 +44,13 @@ module.exports = {
         const endDate = await getDate(interaction.options.getString('end-date'))
 
         // Gett all times from all members in time period
-        times = await getAllTimes(guild_id, startDate, endDate)
+        rawTimes = await getAllTimes(guild_id, startDate, endDate)
+
+        // convert milliseconds to minutes
+        times = rawTimes.map(obj => {
+            minutes = Math.floor(obj.time / 60000)
+            return {...obj, time: minutes}
+        })
         
         // Create the new csv
         const csvWriter = createCsvWriter({
@@ -53,7 +59,7 @@ module.exports = {
                 {id: 'ds_id', title:'DISCORD_ID'},
                 {id: 'name', title:'NAME'},
                 {id: 'specialty', title:'SPECIALTY'},
-                {id: 'time', title:'TIME'}
+                {id: 'time', title:'MINUTES'}
             ]
         })
         csvWriter.writeRecords(times)

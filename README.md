@@ -1,6 +1,5 @@
 
 ## To-do
-- Convert CSVs to output total minutes
 
 # Ideas
 - Could use event listeners and timestamps to enable automation of things like closing time period.
