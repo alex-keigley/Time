@@ -5,6 +5,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const Member = require('../models/Member')
 const {getGuildSettings} = require('../scripts/getGuildSettings')
 const {convertMsToTime} = require('../scripts/convertMsToTime')
+const {getClockInMembers} = require('../scripts/getClockInMembers')
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -17,7 +18,7 @@ module.exports = {
         role_id = settings.clocked_in_role_id
 
         // Get data of all clocked in members
-        const clockedInMembers = await getMembers(await getIDs(interaction))
+        const clockedInMembers = await getClockInMembers(interaction)
 
         // Handle if nobody is clocked in
         if (clockedInMembers.length === 0) {
@@ -43,34 +44,4 @@ module.exports = {
             interaction.reply({embeds: [embed]})
         }
     },
-}
-
-// Retrieve all member IDS with given role
-async function getIDs(interaction) {
-    const m = await interaction.guild.roles.fetch(role_id)
-        .then(role => role.members.map(member => member.id))
-    return(m)
-}
-
-// get member time info
-async function getMembers(id_list) {
-    membersClockedIn = []
-    await id_list.forEach((id => {
-        Member.findOne({ ds_id: id }, (err, member) => {
-
-            // Calculate time since clock-in
-            shift_length = new Date().getTime() - member.current_shift.start_time
-
-            // Create member object with name, shift_length, and current specialty
-            membersClockedIn.push({
-                name: member.ds_nick,
-                shift_length: shift_length,
-                specialty: member.current_shift.specialty
-            })
-        })
-    }))
-
-    return new Promise((resolve) => {
-        setTimeout(() => resolve(membersClockedIn), 300)
-    })
 }

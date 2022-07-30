@@ -13,6 +13,8 @@ const createCsvWriter = require('csv-writer').createObjectCsvWriter
 const {checkTimeAdmin} = require('../scripts/checkTimeAdmin')
 const {getGuildSettings} = require('../scripts/getGuildSettings');
 const {getAllTimes} = require('../scripts/getAllTimes');
+const {getClockInMembers} = require('../scripts/getClockInMembers')
+const {swipe} = require('../scripts/swipe')
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -32,11 +34,12 @@ module.exports = {
         guild_id = settings.guild_id
         expectedMinutes = settings.expected_total_time
         lastClose = settings.previous_time_close
-        newClose = new Date()
+        // currentTime = new Date()
+        // newClose = currentTime.setSeconds(currentTime.getSeconds() + 10)
 
         // Hard-coded dates for developing/troubleshooting
-        // lastClose = new Date('2022-05-01')
-        // newClose = new Date('2022-05-03')
+        lastClose = new Date('2022-05-01')
+        newClose = new Date('2022-08-03')
 
         // Handle if guild has never closed a time period
         if (!lastClose) {
@@ -54,8 +57,8 @@ module.exports = {
             return
         }
 
-        // get sum of shifts - adjustments of all members
-        rawFinalTimes = await getAllTimes(guild_id, lastClose, newClose)
+        // // Get all members currently clocked in & clock them out
+        rawFinalTimes = await swipeThenRead(interaction)
 
         // convert milliseconds to minutes
         finalTimes = rawFinalTimes.map(obj => {
@@ -141,4 +144,29 @@ module.exports = {
 
      
     },
+}
+
+// Swipe all members in list
+async function swipeMembers(interaction, memberList) {
+    let result = true
+    for await (const member of memberList) {
+        m = await interaction.guild.members.fetch(member.ds_id)
+        result = swipe(interaction, m, member.specialty, false)
+    }
+    return result
+}
+
+// Swipe all members, then read updated DB
+async function swipeThenRead(interaction) {
+
+    // Get all members currently clocked in & clock them out
+    const clockedInMembers = await getClockInMembers(interaction)
+    f = await swipeMembers(interaction, clockedInMembers)
+
+    rawFinalTimes = await getAllTimes(guild_id, lastClose, newClose)
+
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(rawFinalTimes), 300)
+    })
+
 }

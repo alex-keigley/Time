@@ -4,12 +4,13 @@ const Shift = require('../models/Shift')
 const {convertMsToTime} = require('../scripts/convertMsToTime')
 const {getGuildSettings} = require('./getGuildSettings')
 
-async function swipe(interaction, member, specialty) {
+async function swipe(interaction, member, specialty, reply=true) {
 
     // Variable setup
     const settings = await getGuildSettings(interaction.guild.id)
     const role_id = settings.clocked_in_role_id
     const clockedIn = member.roles.cache.has(role_id);         // Checks if member has the On Duty role
+
 
     // CLOCK-IN LOGIC
     if (!clockedIn) {
@@ -62,11 +63,14 @@ async function swipe(interaction, member, specialty) {
                     return;
                 }
 
-                // Confirms to user they clocked in
-                embed = new EmbedBuilder()
+                if (reply){
+                    // Confirms to user they clocked in
+                    embed = new EmbedBuilder()
                     .setColor('#1E90FF')
                     .setDescription(`${member} has clocked in to \`${specialty}\``)
-                interaction.reply({ embeds: [embed] });
+                    interaction.reply({ embeds: [embed] });
+                } else return
+                
             })
         })
     } 
@@ -118,12 +122,15 @@ async function swipe(interaction, member, specialty) {
                     return;
                 }
 
-                // Confirms to user they clocked in
-                timeString = convertMsToTime(new_shift.total_length)
-                embed = new EmbedBuilder()
-                    .setColor('#1E90FF')
-                    .setDescription(`${member} has clocked out of \`${new_shift.specialty}\`\n\`${timeString}\` has been added to total time.`)
-                interaction.reply({ embeds: [embed] });
+                if (reply) {
+                    // Confirms to user they clocked in
+                    timeString = convertMsToTime(new_shift.total_length)
+                    embed = new EmbedBuilder()
+                        .setColor('#1E90FF')
+                        .setDescription(`${member} has clocked out of \`${new_shift.specialty}\`\n\`${timeString}\` has been added to total time.`)
+                    interaction.reply({ embeds: [embed] });
+                } else return
+
             })
         })
     }
