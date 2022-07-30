@@ -9,7 +9,7 @@ async function swipe(interaction, member, specialty) {
     // Variable setup
     const settings = await getGuildSettings(interaction.guild.id)
     const role_id = settings.clocked_in_role_id
-    const clockedIn = interaction.member.roles.cache.has(role_id);         // Checks if member has the On Duty role
+    const clockedIn = member.roles.cache.has(role_id);         // Checks if member has the On Duty role
 
     // CLOCK-IN LOGIC
     if (!clockedIn) {
