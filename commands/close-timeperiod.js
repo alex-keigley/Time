@@ -35,8 +35,8 @@ module.exports = {
         newClose = new Date()
 
         // Hard-coded dates for developing/troubleshooting
-        lastClose = new Date('2022-05-01')
-        newClose = new Date('2022-09-01')
+        // lastClose = new Date('2022-05-01')
+        // newClose = new Date('2022-05-03')
 
         // Handle if guild has never closed a time period
         if (!lastClose) {
@@ -110,6 +110,10 @@ module.exports = {
             }
         })
 
+        if (underTimeMessage == ''){
+            underTimeMessage = 'All members achieved expected times.'
+        }
+
         // Create time-frame message
         timeFrameMessage = `Start: \`${lastClose}\` \n End:\`${newClose}\``
          
@@ -126,9 +130,15 @@ module.exports = {
                 { name: 'Time Period', value: timeFrameMessage }
             )
 
-        interaction.reply({
-            files: [file],
-            embeds: [embed]
-        })       
+        try {
+            interaction.reply({
+                files: [file],
+                embeds: [embed]
+            })  
+        } catch {
+            interaction.reply('There was an error closing the time period.')
+        }
+
+     
     },
 }
