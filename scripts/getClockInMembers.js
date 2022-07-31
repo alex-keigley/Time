@@ -8,9 +8,14 @@ async function getIDs(interaction) {
 
     const settings = await getGuildSettings(interaction.guild.id)
     const role_id = settings.clocked_in_role_id
-    const m = await interaction.guild.roles.fetch(role_id)
-        .then(role => role.members.map(member => member.id))
-    return(m)
+    // const m = await interaction.guild.roles.fetch(role_id)
+    //     .then(role => role.members.map(member => member.id))
+
+    // ensure all guild members are in cache prior to checking roles
+    await interaction.guild.members.fetch()
+    const memberIDs = interaction.guild.roles.cache.get(role_id).members.map(m=>m.id)
+
+    return(memberIDs)
 }
 
 // get member time info
