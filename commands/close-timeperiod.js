@@ -12,9 +12,9 @@ const GuildSettings = require('../models/GuildSettings')
 const createCsvWriter = require('csv-writer').createObjectCsvWriter
 const {checkTimeAdmin} = require('../scripts/checkTimeAdmin')
 const {getGuildSettings} = require('../scripts/getGuildSettings');
-const {getAllTimes} = require('../scripts/getAllTimes');
 const {getClockInMembers} = require('../scripts/getClockInMembers')
 const {swipe} = require('../scripts/swipe')
+const {getAllTimes} = require('../scripts/getAllTimes');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -34,12 +34,11 @@ module.exports = {
         guild_id = settings.guild_id
         expectedMinutes = settings.expected_total_time
         lastClose = settings.previous_time_close
-        // currentTime = new Date()
-        // newClose = currentTime.setSeconds(currentTime.getSeconds() + 10)
+        const clockedInMembers = await getClockInMembers(interaction)
 
         // Hard-coded dates for developing/troubleshooting
-        lastClose = new Date('2022-05-01')
-        newClose = new Date('2022-08-03')
+        // lastClose = new Date('2022-05-01')
+        // newClose = new Date('2022-08-03')
 
         // Handle if guild has never closed a time period
         if (!lastClose) {
@@ -58,7 +57,7 @@ module.exports = {
         }
 
         // // Get all members currently clocked in & clock them out
-        rawFinalTimes = await swipeThenRead(interaction)
+        rawFinalTimes = await swipeThenRead(interaction, clockedInMembers)
 
         // convert milliseconds to minutes
         finalTimes = rawFinalTimes.map(obj => {
@@ -91,6 +90,9 @@ module.exports = {
             }
         )
 
+        // Clock members back in
+        swipeMembers(interaction, clockedInMembers)
+
         // Prepare variables for report
         allStaffTime = finalTimes.reduce((total, obj) => obj.time + total,0)                // Total minutes for all members
 
@@ -119,6 +121,12 @@ module.exports = {
 
         // Create time-frame message
         timeFrameMessage = `Start: \`${lastClose}\` \n End:\`${newClose}\``
+
+        // Create clocked-in member notifcation message
+        shiftSplitMessage = ''
+        clockedInMembers.forEach((member) => {
+            shiftSplitMessage = shiftSplitMessage.concat(`${member.name} added current shift of ${Math.floor(member.shift_length / 60000)} minutes.\n`)
+        })
          
         // Reply to user with file
         file = new AttachmentBuilder()
@@ -130,7 +138,8 @@ module.exports = {
             .setDescription(`A grand total of \`${allStaffTime}\` minutes were clocked.`)
             .addFields(
                 { name: `Clocked time under \`${expectedMinutes}\` minutes:`, value: underTimeMessage },
-                { name: 'Time Period', value: timeFrameMessage }
+                { name: 'Time Period', value: timeFrameMessage },
+                { name: 'Carry Over Shifts', value: shiftSplitMessage}
             )
 
         try {
@@ -148,21 +157,25 @@ module.exports = {
 
 // Swipe all members in list
 async function swipeMembers(interaction, memberList) {
-    let result = true
+    let result = []
     for await (const member of memberList) {
         m = await interaction.guild.members.fetch(member.ds_id)
-        result = swipe(interaction, m, member.specialty, false)
+        result.push(swipe(interaction, m, member.specialty, false) )
     }
-    return result
+    // return result
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(result), 500)
+    })
 }
 
 // Swipe all members, then read updated DB
-async function swipeThenRead(interaction) {
+async function swipeThenRead(interaction, clockedInMembers) {
 
     // Get all members currently clocked in & clock them out
-    const clockedInMembers = await getClockInMembers(interaction)
+    // const clockedInMembers = await getClockInMembers(interaction)
     f = await swipeMembers(interaction, clockedInMembers)
 
+    newClose = new Date()
     rawFinalTimes = await getAllTimes(guild_id, lastClose, newClose)
 
     return new Promise((resolve) => {
