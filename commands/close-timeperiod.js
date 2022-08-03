@@ -22,6 +22,9 @@ module.exports = {
 		.setDescription('Close the current time period.'),
 	async execute(interaction) {
 
+        // this command takes over 3 seconds, so defer reply
+        await interaction.deferReply()
+
         // Make sure user is a Time or Discord admin before running command
         adminStatus = await checkTimeAdmin(interaction)
         if (adminStatus) {
@@ -123,10 +126,14 @@ module.exports = {
         timeFrameMessage = `Start: \`${lastClose}\` \n End:\`${newClose}\``
 
         // Create clocked-in member notifcation message
-        shiftSplitMessage = ''
-        clockedInMembers.forEach((member) => {
-            shiftSplitMessage = shiftSplitMessage.concat(`${member.name} added current shift of ${Math.floor(member.shift_length / 60000)} minutes.\n`)
-        })
+        if (!clockedInMembers.length == 0) {
+            shiftSplitMessage = ''
+            clockedInMembers.forEach((member) => {
+                shiftSplitMessage = shiftSplitMessage.concat(`${member.name} added current shift of ${Math.floor(member.shift_length / 60000)} minutes.\n`)
+            })
+        } else {
+            shiftSplitMessage = 'No members clocked in for time-period close.'
+        }        
          
         // Reply to user with file
         file = new AttachmentBuilder()
@@ -143,12 +150,12 @@ module.exports = {
             )
 
         try {
-            interaction.reply({
+            interaction.editReply({
                 files: [file],
                 embeds: [embed]
             })  
         } catch {
-            interaction.reply('There was an error closing the time period.')
+            interaction.editReply('There was an error closing the time period.')
         }
 
      
