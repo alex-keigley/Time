@@ -29,7 +29,7 @@ async function swipe(interaction, member, specialty, reply=true) {
                 ds_name: member.user.username,
                 ds_discriminator: member.user.discriminator,
                 ds_nick: member.displayName,
-                current_shift: new_shift,
+                current_shift: {},
                 clocked_in: false
             })
         }
