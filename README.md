@@ -6,6 +6,9 @@
 
 ## Current Commands
 ### Open Access
+- None
+
+### General User Role Access
 - /clocked-in - Returns list with times of everyone clocked in
 - /lifetime - Returns all hours ever tracked for user
 - /swipe - Used to clock in and out
@@ -15,6 +18,7 @@
 #### Setup
 - /set-clockchannel - Set which channel to use for clocking in/out
 - /set-clockinrole - Set which role to add while clocked in
+- /set-userrole - Set which role has general access to clock in/out
 - /set-manageclockrole - Set role which will have admin level access to bot - Only usable by discord admin
 - /set-expectedtime - Set time in minutes that members are supposed to clock in a time period.
 - /set-defaultspecialty - Sets specialtiy to clock-in to if there is no input

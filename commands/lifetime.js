@@ -4,12 +4,20 @@ const { EmbedBuilder } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const {getIndividualTimes} = require('../scripts/getIndividualTimes')
 const {convertMsToTime} = require('../scripts/convertMsToTime');
+const {checkTimeUser} = require('../scripts/checkTimeUser')
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('lifetime')
 		.setDescription('Return all hours clocked since implementation'),
 	async execute(interaction) {
+
+        // Ensure member running command is authorized
+        userStatus = await checkTimeUser(interaction)
+        if (!userStatus) {
+            interaction.reply('You do not have permission to use this command') 
+            return
+        };
 
         // Setup variables
         const guild_id = interaction.guild.id

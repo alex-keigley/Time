@@ -22,15 +22,15 @@ module.exports = {
 		.setDescription('Close the current time period.'),
 	async execute(interaction) {
 
-        // this command takes over 3 seconds, so defer reply
-        await interaction.deferReply()
-
         // Make sure user is a Time or Discord admin before running command
         adminStatus = await checkTimeAdmin(interaction)
         if (adminStatus) {
             interaction.reply('You do not have permission to use this command') 
             return
         };
+
+        // this command takes over 3 seconds, so defer reply
+        await interaction.deferReply()
 
         // Setting up variables
         let settings = await getGuildSettings(interaction.guild.id)

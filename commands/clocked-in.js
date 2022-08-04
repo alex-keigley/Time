@@ -6,12 +6,20 @@ const Member = require('../models/Member')
 const {getGuildSettings} = require('../scripts/getGuildSettings')
 const {convertMsToTime} = require('../scripts/convertMsToTime')
 const {getClockInMembers} = require('../scripts/getClockInMembers')
+const {checkTimeUser} = require('../scripts/checkTimeUser')
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('clocked-in')
 		.setDescription('See everyone currently clocked in.'),
 	async execute(interaction) {
+
+        // Ensure member running command is authorized
+        userStatus = await checkTimeUser(interaction)
+        if (!userStatus) {
+            interaction.reply('You do not have permission to use this command') 
+            return
+        };
 
         // Get guild settings and variables
         settings = await getGuildSettings(interaction.guild.id)
