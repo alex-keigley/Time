@@ -32,8 +32,10 @@ module.exports = {
             // create description text for embed
             let message = ''
             clockedInMembers.forEach((member => {
-                shiftString = convertMsToTime(member.shift_length)
-                message = message.concat(`**${member.name}** - ${member.specialty}\n*${shiftString}*\n\u200B\n`)
+                currentTime = new Date().getTime()
+                shift_length = currentTime - member.current_shift.start_time
+                shiftString = convertMsToTime(shift_length)
+                message = message.concat(`**${member.ds_nick}** - ${member.current_shift.specialty}\n*${shiftString}*\n\u200B\n`)
             }))
 
             // create and send embed
