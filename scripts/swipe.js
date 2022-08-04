@@ -19,7 +19,7 @@ async function swipe(interaction, member, specialty, reply=true) {
         member.roles.add(role_id)
 
         // Update member in DB to begin current shift
-        Member.findOne( {ds_id: member.id}, (err, db_member) => {
+        Member.findOne( {ds_id: member.id, guild_id: interaction.guild.id}, (err, db_member) => {
 
             // Return error and exit command
             if (err) {
@@ -83,7 +83,7 @@ async function swipe(interaction, member, specialty, reply=true) {
 
         // Temporary closing current shift
         // Update member in DB to begin current shift
-        Member.findOne( {ds_id: member.id}, (err, db_member) => {
+        Member.findOne( {ds_id: member.id, guild_id: interaction.guild.id}, (err, db_member) => {
 
             // Return error and exit command
             if (err) {
