@@ -129,7 +129,9 @@ module.exports = {
         if (!clockedInMembers.length == 0) {
             shiftSplitMessage = ''
             clockedInMembers.forEach((member) => {
-                shiftSplitMessage = shiftSplitMessage.concat(`${member.name} added current shift of ${Math.floor(member.shift_length / 60000)} minutes.\n`)
+                currentTime = new Date().getTime()
+                shift_length = currentTime - member.current_shift.start_time
+                shiftSplitMessage = shiftSplitMessage.concat(`${member.ds_nick} added current shift of ${Math.floor(shift_length / 60000)} minutes.\n`)
             })
         } else {
             shiftSplitMessage = 'No members clocked in for time-period close.'
@@ -167,7 +169,7 @@ async function swipeMembers(interaction, memberList) {
     let result = []
     for await (const member of memberList) {
         m = await interaction.guild.members.fetch(member.ds_id)
-        result.push(swipe(interaction, m, member.specialty, false) )
+        result.push(swipe(interaction, m, member.current_shift.specialty, false) )
     }
     // return result
     return new Promise((resolve) => {
