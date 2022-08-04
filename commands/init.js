@@ -12,6 +12,10 @@ module.exports = {
             .setDescription('Channel to use for access to Time bot.')
             .setRequired(true))
         .addRoleOption(option => option
+            .setName('user_role')
+            .setDescription('Role that allows users to clock in/out.')
+            .setRequired(true))
+        .addRoleOption(option => option
             .setName('active_clock_role')
             .setDescription('Role to grant members who are clocked in.')
             .setRequired(true))
@@ -44,6 +48,7 @@ module.exports = {
                     guild_id: interaction.guild.id,
                     guild_name: interaction.guild.name,
                     clock_channel_id: interaction.options.getChannel('time_channel').id,
+                    user_role: interaction.options.getRole('user_role').id,
                     clocked_in_role_id: interaction.options.getRole('active_clock_role').id,
                     specialities: [ def_specialty ],
                     default_specialty: def_specialty,
@@ -55,11 +60,11 @@ module.exports = {
                 settings.guild_id = interaction.guild.id
                 settings.guild_name = interaction.guild.name
                 settings.clock_channel_id = interaction.options.getChannel('time_channel').id
+                settings.PermissionsBitFielduser_role = interaction.options.getRole('user_role').id
                 settings.clocked_in_role_id = interaction.options.getRole('active_clock_role').id
                 settings.specialities = [ def_specialty ]
                 settings.default_specialty = def_specialty
                 settings.previous_time_close = new Date()
-                console.log(settings)
             }
 
             // Save and confirm new clock channel has been set

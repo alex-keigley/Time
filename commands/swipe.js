@@ -2,6 +2,7 @@
 
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const {getGuildSettings} = require('../scripts/getGuildSettings')
+const {checkTimeUser} = require('../scripts/checkTimeUser')
 const {swipe} = require('../scripts/swipe')
 
 module.exports = {
@@ -14,6 +15,13 @@ module.exports = {
                 .setDescription('Choose what specialty to clock-in to.')
             ),
 	async execute(interaction) {
+
+        // Ensure member running command is authorized
+        userStatus = await checkTimeUser(interaction)
+        if (!userStatus) {
+            interaction.reply('You do not have permission to use this command') 
+            return
+        };
 
         // Preparing variables
         settings = await getGuildSettings(interaction.guild.id)
