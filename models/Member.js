@@ -6,6 +6,7 @@ const MemberSchema = new mongoose.Schema({
     ds_name: String,                                        // Discord name of user
     ds_discriminator: Number,                               // Four digit discord discriminator of user
     ds_nick: String,                                        // Nickname of user on guild
+    clocked_in: Boolean,
     current_shift: Object                                   // Current shift
 })
 

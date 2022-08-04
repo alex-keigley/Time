@@ -11,74 +11,92 @@ async function swipe(interaction, member, specialty, reply=true) {
     const role_id = settings.clocked_in_role_id
     const clockedIn = member.roles.cache.has(role_id);         // Checks if member has the On Duty role
 
-    // Lookup member
-    Member.findOne( { ds_id: member.id, guild_id: interaction.guild.id }, (err, db_member) => {
 
-        // Check for error
-        if (err) {
-            console.log(err)
-            interaction.reply('An error occured while trying to clock-in.')
-            return;
-        }
+    // CLOCK-IN LOGIC
+    if (!clockedIn) {
 
-        // Check for no member found - Create & continue
-        if (!db_member) {
-            db_member = new Member({
-                ds_id: member.id,
-                guild_id: interaction.guild.id,
-                ds_name: member.user.username,
-                ds_discriminator: member.user.discriminator,
-                ds_nick: member.displayName,
-                current_shift: new_shift,
-                clocked_in: false
-            })
-        }
+        // Add On-Duty Role
+        member.roles.add(role_id)
 
-        // CLOCK IN LOGIC
-        if (!db_member.clocked_in) {
+        // Update member in DB to begin current shift
+        Member.findOne( {ds_id: member.id, guild_id: interaction.guild.id}, (err, db_member) => {
 
-            // Create new partial shift
+            // Return error and exit command
+            if (err) {
+                console.log(err)
+                interaction.reply('An error occured while trying to clock-in')
+                return;
+            }
+
+            // Create new shift object
             new_shift = {
-                guild_id: interaction.guild.id,
                 ds_id: member.id,
                 specialty: specialty,
+                guild_id: interaction.guild.id,
                 start_time: new Date().getTime()
             }
 
-            // Add clock role to member
-            member.roles.add(role_id)
+            // Adds member to DB, if not found
+            if (!db_member){
+                db_member = new Member({
+                    ds_id: member.id,
+                    guild_id: interaction.guild.id,
+                    ds_name: member.user.username,
+                    ds_discriminator: member.user.discriminator,
+                    ds_nick: member.displayName,
+                    current_shift: new_shift
+                })
+            }
+            // Updates found member
+            else {
+                    db_member.ds_nick = member.displayName,
+                    db_member.current_shift = new_shift
+            }
 
-            // Ensure DB is storing most current name of member & new shift
-            db_member.ds_nick = member.displayName
-            db_member.current_shift = new_shift
-            db_member.clocked_in = true
-
-            // Save to DB & send confirmation
+            // Save the new/updated member
             db_member.save(err => {
+
                 // Throw an error and exit command if needed
                 if (err) {
                     console.log(err)
                     interaction.reply('An error occured while trying to clock-in')
                     return;
                 }
+
                 if (reply){
                     // Confirms to user they clocked in
                     embed = new EmbedBuilder()
                     .setColor('#1E90FF')
                     .setDescription(`${member} has clocked in to \`${specialty}\``)
                     interaction.reply({ embeds: [embed] });
-                } else return                
+                } else return
+                
             })
-        }
+        })
+    } 
+    
+    // CLOCK-OUT LOGIC
+    else {
 
-        // CLOCK OUT LOGIC
-        else {
+        // Remove On-Duty Role
+        member.roles.remove(role_id)
 
-            // Calculate totals for new shift object
+        // Temporary closing current shift
+        // Update member in DB to begin current shift
+        Member.findOne( {ds_id: member.id, guild_id: interaction.guild.id}, (err, db_member) => {
+
+            // Return error and exit command
+            if (err) {
+                console.log(err)
+                interaction.reply('An error occured while trying to clock-in')
+                return;
+            }
+
+            // Create end time & calculate total length in milliseconds
             end_time = new Date().getTime()
             total_length = end_time - db_member.current_shift.start_time
 
-            // Prepare Shift object to be written to DB
+            // Create new shift object
             new_shift = {
                 ds_id: db_member.ds_id,
                 guild_id: db_member.guild_id,
@@ -88,18 +106,15 @@ async function swipe(interaction, member, specialty, reply=true) {
                 total_length: total_length
             }
 
-            // Write new shift to DB
+            // Save ended shift to database
             Shift.create(new_shift)
 
             // Removes shift that just ended from member
             db_member.current_shift = {}
-            db_member.clocked_in = false
 
-            // Remove discord role from user
-            member.roles.remove(role_id)
-
-            // Save updated member to DB
+            // Save the new/updated member
             db_member.save(err => {
+
                 // Throw an error and exit command if needed
                 if (err) {
                     console.log(err)
@@ -115,9 +130,10 @@ async function swipe(interaction, member, specialty, reply=true) {
                         .setDescription(`${member} has clocked out of \`${new_shift.specialty}\`\n\`${timeString}\` has been added to total time.`)
                     interaction.reply({ embeds: [embed] });
                 } else return
+
             })
-        }
-    })
+        })
+    }
 }
 
 exports.swipe = swipe;
