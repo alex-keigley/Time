@@ -24,7 +24,7 @@ async function getClockInMembers(interaction) {
 
     membersClockedIn = []
     await id_list.forEach((id => {
-        Member.findOne({ ds_id: id }, (err, member) => {
+        Member.findOne({ ds_id: id, guild_id: interaction.guild.id }, (err, member) => {
 
             // Calculate time since clock-in
             shift_length = new Date().getTime() - member.current_shift.start_time
