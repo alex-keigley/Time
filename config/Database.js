@@ -11,9 +11,9 @@ class Database {
     connect () {
         console.log('Connecting to database...')
 
-        const connectionURL = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASS}@cluster0.vyamcoz.mongodb.net/?retryWrites=true&w=majority`
+        // const connectionURL = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASS}@cluster0.vyamcoz.mongodb.net/?retryWrites=true&w=majority`
 
-        mongoose.connect(connectionURL, {
+        mongoose.connect(process.env.LOCAL_MONGO_URL, {
             useNewUrlParser: true,
             useUnifiedTopology: true
         }).then(() => {

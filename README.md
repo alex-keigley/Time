@@ -13,6 +13,7 @@
 - /lifetime - Returns all hours ever tracked for user
 - /swipe - Used to clock in and out
 - /data - Return hours clocked since start of time period
+- /list-specialities - Return all specialities available to clock-in to
 
 ### Administrator
 #### Setup
