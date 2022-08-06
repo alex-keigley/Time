@@ -3,6 +3,7 @@
 
 # Ideas
 - Could use event listeners and timestamps to enable automation of things like closing time period.
+- Make help commands not hard-coded
 
 ## Current Commands
 ### Open Access
@@ -14,6 +15,7 @@
 - /swipe - Used to clock in and out
 - /data - Return hours clocked since start of time period
 - /list-specialities - Return all specialities available to clock-in to
+- /help - Lists all general use commands
 
 ### Administrator
 #### Setup
@@ -30,3 +32,4 @@
 - /time-period - Totals milliseconds for each member with data between two given dates and generates CSV.
 - /adjust - Add or remove time from a member
 - /close-timeperiod - Close the current time period and generate csv.
+- /help-admin - List all admin commands
