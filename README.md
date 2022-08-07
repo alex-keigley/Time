@@ -1,5 +1,6 @@
 
 ## To-do
+- /clocked-in SPECIALTY - Show only the people from the specified specialty currenty clocked-in.
 
 # Ideas
 - Could use event listeners and timestamps to enable automation of things like closing time period.
@@ -7,6 +8,7 @@
 
 # Bugs
 - When Timekeeper role is underneath other's it doesn't work properly and knocks entire bot offline. Throws PUT permissions error in console.
+- Check this for fix: https://terabytetiger.com/lessons/how-roles-cause-missing-permission-errors-in-discord-js
 
 ## Current Commands
 ### Open Access

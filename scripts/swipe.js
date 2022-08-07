@@ -65,7 +65,7 @@ async function swipe(interaction, member, specialty, reply=true) {
                     // Confirms to user they clocked in
                     embed = new EmbedBuilder()
                     .setColor('#1E90FF')
-                    .setDescription(`${member} has clocked in to \`${specialty}\``)
+                    .setDescription(`<@!${member.id}> has clocked in to \`${specialty}\``)
                     interaction.reply({ embeds: [embed] });
                 } else return                
             })
@@ -112,7 +112,7 @@ async function swipe(interaction, member, specialty, reply=true) {
                     timeString = convertMsToTime(new_shift.total_length)
                     embed = new EmbedBuilder()
                         .setColor('#1E90FF')
-                        .setDescription(`${member} has clocked out of \`${new_shift.specialty}\`\n\`${timeString}\` has been added to total time.`)
+                        .setDescription(`<@!${member.id}> has clocked out of \`${new_shift.specialty}\`\n\`${timeString}\` has been added to total time.`)
                     interaction.reply({ embeds: [embed] });
                 } else return
             })
