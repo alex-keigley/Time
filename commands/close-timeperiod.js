@@ -13,6 +13,7 @@ const createCsvWriter = require('csv-writer').createObjectCsvWriter
 const {checkTimeAdmin} = require('../scripts/checkTimeAdmin')
 const {getGuildSettings} = require('../scripts/getGuildSettings');
 const {getClockInMembers} = require('../scripts/getClockInMembers')
+const {convertMsToTime} = require('../scripts/convertMsToTime')
 const {swipe} = require('../scripts/swipe')
 const {getAllTimes} = require('../scripts/getAllTimes');
 
@@ -61,6 +62,7 @@ module.exports = {
 
         // // Get all members currently clocked in & clock them out
         rawFinalTimes = await swipeThenRead(interaction, clockedInMembers)
+        await notifyMembers(interaction, clockedInMembers)
 
         // convert milliseconds to minutes
         finalTimes = rawFinalTimes.map(obj => {
@@ -190,5 +192,34 @@ async function swipeThenRead(interaction, clockedInMembers) {
     return new Promise((resolve) => {
         setTimeout(() => resolve(rawFinalTimes), 300)
     })
+}
 
+// Notify members they have been clocked out
+async function notifyMembers(interaction, memberList) {
+    for await (const member of memberList) {
+
+        // Get GuildMember Object for member
+        m = await interaction.guild.members.fetch(member.ds_id)
+
+        // Get variables
+        specialty = member.current_shift.specialty
+        end_time = new Date().getTime()
+        total_length = end_time - member.current_shift.start_time
+        timeString = convertMsToTime(total_length)      
+        
+        // Prepare embed
+        embed = new EmbedBuilder()
+            .setColor('#1E90FF')
+            // .setDescription(`<@!${member.id}> has clocked out of \`${new_shift.specialty}\`\n\`${timeString}\` has been added to total time.`)
+            .setDescription(`The time period has been closed. You have been clocked clocked out of \`${specialty}\`\n\`${timeString}\` has been added to total time.`)
+            .setFooter({ text: 'A new shift has been automatically started.' })
+
+        // DM user the automatically closed shift
+        dmChannel = await m.createDM()
+        dmChannel.send({ embeds: [embed] })
+    }
+    // return result
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(), 500)
+    })
 }
