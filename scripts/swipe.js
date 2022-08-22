@@ -1,15 +1,19 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, DiscordAPIError } = require('discord.js');
 const Member = require('../models/Member')
 const Shift = require('../models/Shift')
 const {convertMsToTime} = require('../scripts/convertMsToTime')
 const {getGuildSettings} = require('./getGuildSettings')
+
+// Used to provide feedback with possible config error.
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 async function swipe(interaction, member, specialty, reply=true) {
 
     // Variable setup
     const settings = await getGuildSettings(interaction.guild.id)
     const role_id = settings.clocked_in_role_id
-    // const clockedIn = member.roles.cache.has(role_id);         // Checks if member has the On Duty role
 
     // Lookup member
     Member.findOne( { ds_id: member.id, guild_id: interaction.guild.id }, (err, db_member) => {
@@ -46,29 +50,41 @@ async function swipe(interaction, member, specialty, reply=true) {
             }
 
             // Add clock role to member
-            member.roles.add(role_id)
+            member.roles.add(role_id).then(
 
-            // Ensure DB is storing most current name of member & new shift
-            db_member.ds_nick = member.displayName
-            db_member.current_shift = new_shift
-            db_member.clocked_in = true
+                // Ensure DB is storing most current name of member & new shift
+                db_member.ds_nick = member.displayName,
+                db_member.current_shift = new_shift,
+                db_member.clocked_in = true,
 
-            // Save to DB & send confirmation
-            db_member.save(err => {
-                // Throw an error and exit command if needed
-                if (err) {
-                    console.log(err)
-                    interaction.reply('An error occured while trying to clock-in')
-                    return;
-                }
-                if (reply){
-                    // Confirms to user they clocked in
-                    embed = new EmbedBuilder()
-                    .setColor('#1E90FF')
-                    .setDescription(`<@!${member.id}> has clocked in to \`${specialty}\``)
-                    interaction.reply({ embeds: [embed] });
-                } else return                
-            })
+                // Save to DB & send confirmation
+                db_member.save(err => {
+                    // Throw an error and exit command if needed
+                    if (err) {
+                        console.log(err)
+                        interaction.reply('An error occured while trying to clock-in')
+                        return;
+                    }
+                    if (reply){
+                        // Confirms to user they clocked in
+                        embed = new EmbedBuilder()
+                        .setColor('#1E90FF')
+                        .setDescription(`<@!${member.id}> has clocked in to \`${specialty}\``)
+                        interaction.reply({ embeds: [embed] });
+                    } else return                
+                })
+            ).catch(error => {
+                sleep(1000).then(() => {
+                    if (error.code == 50013) {
+                        embed = new EmbedBuilder()
+                                .setColor('#1E90FF')
+                                .setDescription('Error assigning role. Double-check that the "Timekeeper" role is at the top of your discord role heirarchy.')
+                                .setImage('https://gyazo.com/4ab23c8bec9ee8f555f86b0c31230774.png')
+                        interaction.followUp({ embeds: [embed] });
+                        return
+                    }                
+                })                
+            })  
         }
 
         // CLOCK OUT LOGIC
@@ -96,25 +112,36 @@ async function swipe(interaction, member, specialty, reply=true) {
             db_member.clocked_in = false
 
             // Remove discord role from user
-            member.roles.remove(role_id)
+            member.roles.remove(role_id).then(
+                // Save updated member to DB
+                db_member.save(err => {
+                    // Throw an error and exit command if needed
+                    if (err) {
+                        console.log(err)
+                        interaction.reply('An error occured while trying to clock-in')
+                        return;
+                    }
 
-            // Save updated member to DB
-            db_member.save(err => {
-                // Throw an error and exit command if needed
-                if (err) {
-                    console.log(err)
-                    interaction.reply('An error occured while trying to clock-in')
-                    return;
-                }
-
-                if (reply) {
-                    // Confirms to user they clocked in
-                    timeString = convertMsToTime(new_shift.total_length)
-                    embed = new EmbedBuilder()
-                        .setColor('#1E90FF')
-                        .setDescription(`<@!${member.id}> has clocked out of \`${new_shift.specialty}\`\n\`${timeString}\` has been added to total time.`)
-                    interaction.reply({ embeds: [embed] });
-                } else return
+                    if (reply) {
+                        // Confirms to user they clocked in
+                        timeString = convertMsToTime(new_shift.total_length)
+                        embed = new EmbedBuilder()
+                            .setColor('#1E90FF')
+                            .setDescription(`<@!${member.id}> has clocked out of \`${new_shift.specialty}\`\n\`${timeString}\` has been added to total time.`)
+                        interaction.reply({ embeds: [embed] });
+                    } else return
+                })
+            ).catch(error => {
+                sleep(1000).then(() => {
+                    if (error.code == 50013) {
+                        embed = new EmbedBuilder()
+                                .setColor('#1E90FF')
+                                .setDescription('Error assigning role. Double-check that the "Timekeeper" role is at the top of your discord role heirarchy.')
+                                .setImage('https://gyazo.com/4ab23c8bec9ee8f555f86b0c31230774.png')
+                        interaction.followUp({ embeds: [embed] });
+                        return
+                    }                
+                })                
             })
         }
     })
