@@ -1,6 +1,16 @@
+// Standard bot packages
 const { REST } = require('@discordjs/rest')
 const { Routes } = require('discord-api-types/v9')
 require('dotenv').config()
+
+// Api packages
+const express = require ('express')
+const bodyParser = require('body-parser')
+const { apiClockIn } = require('../scripts/apiClockIn')
+const { apiClockOut } = require('../scripts/apiClockOut')
+
+const app = express()
+app.use(bodyParser.json())
 
 module.exports = {
     name: 'ready',
@@ -31,5 +41,23 @@ module.exports = {
                 if (err) console.log(err)
             }
         })();
+
+        // Setting up clock-in route
+        app.post('/clock-in', async (req, res) => {
+            let data = req.body
+            apiClockIn(client, data)
+            res.status(200).send({ message: 'Clock-in API Reached.' })
+        })
+
+        // Setting up clock-out route
+        app.post('/clock-out', async (req, res) => {
+            let data = req.body
+            apiClockOut(client, data)
+            res.status(200).send({ message: 'Clock-out API Reached.' })
+        })
+
+        // Start express server
+        app.listen(process.env.PORT, () => console.log(`Listening on port ${process.env.PORT}`))
+
     }
 }
