@@ -46,7 +46,11 @@ module.exports = {
                     return;
                 }
 
-                interaction.reply(`${settings.api_key}`)
+                interaction.reply({
+                    content: `API Key: \`${settings.api_key}\``,
+                    ephemeral: true
+                })
+
             })
         })
     }
