@@ -7,6 +7,7 @@ require('dotenv').config()
 const express = require ('express')
 const bodyParser = require('body-parser')
 const https = require('https')
+const http = require('http')
 const fs = require('fs')
 const path = require('path')
 
@@ -105,7 +106,7 @@ module.exports = {
             })
         })
 
-        // Start express server using HTTPS
+        // listen for HTTPS traffic
         https
             .createServer(
                 {
@@ -113,9 +114,14 @@ module.exports = {
                     cert: fs.readFileSync(path.resolve(__dirname, '../certs/cert.pem'))
                 },
                 app)
-            .listen(process.env.PORT, ()=>{
-                console.log(`Listening on port ${process.env.PORT}`)
+            .listen(443, ()=>{
+                console.log(`Listening for HTTPS traffic.`)
             })
+
+        // listen for HTTP traffic
+        http.createServer(app).listen(80, ()=>{
+            console.log('Listening for HTTP traffic.')
+        })
 
         // Start express server using HTTP
         // app.listen(process.env.PORT, () => console.log(`Listening on port ${process.env.PORT}`))
