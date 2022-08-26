@@ -6,6 +6,11 @@ require('dotenv').config()
 // Api packages
 const express = require ('express')
 const bodyParser = require('body-parser')
+const https = require('https')
+const http = require('http')
+const fs = require('fs')
+const path = require('path')
+
 const { apiClockIn } = require('../scripts/apiClockIn')
 const { apiClockOut } = require('../scripts/apiClockOut')
 const GuildSettings = require('../models/GuildSettings')
@@ -101,8 +106,25 @@ module.exports = {
             })
         })
 
-        // Start express server
-        app.listen(process.env.PORT, () => console.log(`Listening on port ${process.env.PORT}`))
+        // listen for HTTPS traffic
+        https
+            .createServer(
+                {
+                    key: fs.readFileSync(path.resolve(__dirname, '../certs/key.pem')),
+                    cert: fs.readFileSync(path.resolve(__dirname, '../certs/cert.pem'))
+                },
+                app)
+            .listen(443, ()=>{
+                console.log(`Listening for HTTPS traffic.`)
+            })
+
+        // listen for HTTP traffic
+        http.createServer(app).listen(80, ()=>{
+            console.log('Listening for HTTP traffic.')
+        })
+
+        // Start express server using HTTP
+        // app.listen(process.env.PORT, () => console.log(`Listening on port ${process.env.PORT}`))
 
     }
 }
