@@ -10,7 +10,8 @@ const GuildSettingsSchema = new mongoose.Schema({
     default_specialty: String,
     expected_total_time: Number,
     previous_time_close: Date,
-    specialities: Array
+    specialities: Array,
+    api_key: String
 })
 
 module.exports = mongoose.model('GuildSettings', GuildSettingsSchema)
