@@ -25,11 +25,18 @@ async function adjustTimes(times, adjustments) {
             // Get nickname of member
             Member.findOne({ ds_id: adjustment.ds_id }, (err, member) => {
                 if(err) throw err
+
+                // check if member object was found
+                if (member == null) {
+                    console.log(`${adjustment.ds_id} not found in database.`)
+                    return
+                }
                 try {
                     ds_nick = member.ds_nick;
                 } catch (err) {
-                    console.log(err)
-                    ds_nick = member.ds_name
+                    console.log('Error retrieving all adjustments:\n')
+                    console.log(member)
+                    return;
                 }
                 
                 times.push({
