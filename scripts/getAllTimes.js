@@ -25,7 +25,13 @@ async function adjustTimes(times, adjustments) {
             // Get nickname of member
             Member.findOne({ ds_id: adjustment.ds_id }, (err, member) => {
                 if(err) throw err
-                ds_nick = member.ds_nick;
+                try {
+                    ds_nick = member.ds_nick;
+                } catch (err) {
+                    console.log(err)
+                    ds_nick = member.ds_name
+                }
+                
                 times.push({
                     ds_id: adjustment.ds_id,
                     name: ds_nick,
