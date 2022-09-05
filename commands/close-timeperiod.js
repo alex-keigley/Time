@@ -36,6 +36,8 @@ module.exports = {
         // Setting up variables
         let settings = await getGuildSettings(interaction.guild.id)
         guild_id = settings.guild_id
+        channel_id = settings.clock_channel_id
+        channel = await interaction.guild.channels.cache.get(channel_id)
         expectedMinutes = settings.expected_total_time
         lastClose = settings.previous_time_close
         const clockedInMembers = await getClockInMembers(interaction)
@@ -211,12 +213,13 @@ async function notifyMembers(interaction, memberList) {
         embed = new EmbedBuilder()
             .setColor('#1E90FF')
             // .setDescription(`<@!${member.id}> has clocked out of \`${new_shift.specialty}\`\n\`${timeString}\` has been added to total time.`)
-            .setDescription(`The time period has been closed. You have been clocked clocked out of \`${specialty}\`\n\`${timeString}\` has been added to total time.`)
+            .setDescription(`The time period has been closed. ${m} has been clocked out of \`${specialty}\`\n\`${timeString}\` has been added to total time.`)
             .setFooter({ text: 'A new shift has been automatically started.' })
 
         // DM user the automatically closed shift
-        dmChannel = await m.createDM()
-        dmChannel.send({ embeds: [embed] })
+        // dmChannel = await m.createDM()
+        // dmChannel.send({ embeds: [embed] })
+        channel.send({ embeds: [embed]})
     }
     // return result
     return new Promise((resolve) => {
