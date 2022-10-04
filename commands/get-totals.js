@@ -44,6 +44,8 @@ module.exports = {
         // Convert inputted dates to Unix Date objects
         const startDate = await getDate(interaction.options.getString('start-date'))
         const endDate = await getDate(interaction.options.getString('end-date'))
+        const startString = interaction.options.getString('start-date')
+        const endString = interaction.options.getString('end-date')
 
         // Get total of time clocked by specialty since last time-period close
         currentTimes = await getIndividualTimes(guild_id, ds_id, startDate, endDate)
@@ -75,7 +77,8 @@ module.exports = {
         embed = new EmbedBuilder()
             .setColor('#1E90FF')
             .setTitle(`${ds_nick} - Totals`)
-            .setDescription(message)                
+            .setDescription(message)  
+            .setFooter({ text: `${startString} thru ${endString}` })                 
         interaction.reply({
             embeds: [embed],
             ephemeral: true
